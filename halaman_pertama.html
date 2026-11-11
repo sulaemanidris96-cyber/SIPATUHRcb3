@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPATUH RCB3 | Sistem Informasi Penegakan Tata Tertib dan Kehadiran SD Negeri Rancabentang 3</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+    }
+    
+    .school-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: #0d6efd;
+      border: 3px solid rgba(255,255,255,.85);
+      border-radius: 50%;
+      font-size: 2.4rem;
+    }
+
+    /* Sidebar Layout */
+    .wrapper {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+    
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background-color: #212529;
+      color: #fff;
+      transition: all 0.3s;
+    }
+    
+    #sidebar .sidebar-header {
+      padding: 20px;
+      background: #1a1e21;
+      text-align: center;
+    }
+    
+    #sidebar ul.components {
+      padding: 20px 0;
+    }
+    
+    #sidebar ul li a {
+      padding: 12px 20px;
+      font-size: 1.1em;
+      display: block;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    
+    #sidebar ul li a:hover, #sidebar ul li.active > a {
+      color: #fff;
+      background: #0d6efd;
+      border-left: 4px solid #fff;
+    }
+    
+    #sidebar ul li a i {
+      margin-right: 10px;
+    }
+
+    #content {
+      width: 100%;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* Card Styling */
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+    }
+    
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      border-radius: 12px 12px 0 0 !important;
+      font-weight: 600;
+      padding: 15px 20px;
+    }
+
+    /* SPAs Page Hiding */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loading Overlay */
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.8);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    /* Responsive Sidebar */
+    @media (max-width: 768px) {
+      #sidebar {
+        margin-left: -250px;
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+      }
+      #sidebar.active {
+        margin-left: 0;
+      }
+      #content {
+        width: 100%;
+      }
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+      .mobile-overlay.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Global Loading Indicator -->
+  <div id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+    <h5 class="mt-3">Memuat Data...</h5>
+  </div>
+
+  <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <div class="school-icon mb-2" role="img" aria-label="Ikon sekolah">
+          <i class="fas fa-school"></i>
+        </div>
+        <h5>SIPATUH RCB3</h5>
+        <small class="text-light opacity-75">Sistem Informasi Penegakan Tata Tertib dan Kehadiran SD Negeri Rancabentang 3</small>
+      </div>
+
+      <ul class="list-unstyled components">
+        <li class="active">
+          <a href="#" onclick="navigate('dashboard', this)"><i class="fas fa-home"></i> Dashboard</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('input', this)"><i class="fas fa-edit"></i> Input Pelanggaran</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('laporan', this)"><i class="fas fa-table"></i> Laporan</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('presensi', this)"><i class="fas fa-calendar-check"></i> Presensi Kehadiran</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('rekapPresensi', this)"><i class="fas fa-chart-bar"></i> Rekap Kehadiran</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('piket', this)"><i class="fas fa-calendar-alt"></i> Jadwal Piket</a>
+        </li>
+        <li>
+          <a href="#" onclick="navigate('aturan', this)"><i class="fas fa-book"></i> Tata Tertib</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="content">
+      <!-- Navbar for mobile toggle -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 rounded shadow-sm d-md-none">
+        <div class="container-fluid">
+          <button type="button" id="sidebarCollapse" class="btn btn-primary" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i> Menu
+          </button>
+        </div>
+      </nav>
+
+      <!-- ========================================== -->
+      <!-- PAGE: DASHBOARD                              -->
+      <!-- ========================================== -->
+      <div id="dashboard" class="page-section active">
+        <h2 class="mb-4">Dashboard</h2>
+        <div class="row">
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card bg-primary text-white h-100">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-user-times"></i> Pelanggaran Hari Ini</h5>
+                <h2 class="display-4" id="dash-total-pelanggaran">0</h2>
+                <p class="card-text">Total siswa terlambat / melanggar hari ini.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-8 mb-4">
+            <div class="card bg-success text-white h-100">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-user-tie"></i> Guru Piket Hari Ini (<span id="dash-hari">...</span>)</h5>
+                <h3 class="mt-3" id="dash-guru-piket">Memuat...</h3>
+                <p class="card-text mt-3">Silakan lapor kepada guru piket jika ada keperluan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Selamat Datang</div>
+          <div class="card-body">
+            <p>Selamat datang di SIPATUH RCB3. Aplikasi ini digunakan untuk mencatat dan memantau kedisiplinan siswa. Gunakan menu di samping untuk navigasi.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: INPUT PELANGGARAN                      -->
+      <!-- ========================================== -->
+      <div id="input" class="page-section">
+        <h2 class="mb-4">Input Pelanggaran / Keterlambatan</h2>
+        <div class="card">
+          <div class="card-header text-bg-primary">
+            <i class="fas fa-pen"></i> Form Pencatatan
+          </div>
+          <div class="card-body">
+            <form id="formPelanggaran" onsubmit="handleFormSubmit(event)">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Nama Siswa</label>
+                  <input class="form-control" list="siswaList" id="namaSiswa" name="namaSiswa" required placeholder="Ketik nama siswa...">
+                  <datalist id="siswaList"></datalist>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                  <label class="form-label">Kelas</label>
+                  <input type="text" class="form-control" id="kelasSiswa" name="kelasSiswa" required readonly placeholder="Otomatis terisi">
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Jenis Pelanggaran</label>
+                  <select class="form-select" id="jenisPelanggaran" name="jenisPelanggaran" required onchange="updatePoin()">
+                    <option value="" enabled selected>-- Pilih Pelanggaran --</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                  <label class="form-label">Poin Pelanggaran</label>
+                  <input type="number" class="form-control" id="poin" name="poin" required readonly>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Guru Piket Pencatat</label>
+                <select class="form-select" id="guruPencatat" name="guruPencatat" required>
+                  <option value="" enabled selected>-- Pilih Guru Piket --</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Keterangan Tambahan</label>
+                <textarea class="form-control" id="keterangan" name="keterangan" rows="3" placeholder="Contoh: Alasan terlambat bangun kesiangan..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="btnSubmitForm">
+                <i class="fas fa-save"></i> Simpan Data
+              </button>
+            </form>
+            
+            <div id="formAlert" class="mt-3 alert" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: LAPORAN                                -->
+      <!-- ========================================== -->
+      <div id="laporan" class="page-section">
+        <h2 class="mb-4">Laporan Kedisiplinan</h2>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Riwayat Pelanggaran & Keterlambatan</span>
+            <button class="btn btn-success btn-sm" onclick="downloadExcel()">
+              <i class="fas fa-file-excel"></i> Download Excel
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Nama Siswa</th>
+                    <th>Kelas</th>
+                    <th>Pelanggaran</th>
+                    <th>Poin</th>
+                    <th>Pencatat</th>
+                    <th class="text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="table-laporan-body">
+                  <tr><td colspan="7" class="text-center py-4">Memuat data laporan...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: PRESENSI KEHADIRAN                      -->
+      <!-- ========================================== -->
+      <div id="presensi" class="page-section">
+        <h2 class="mb-4">Presensi Kehadiran</h2>
+        <div class="card">
+          <div class="card-header text-bg-primary"><i class="fas fa-calendar-check"></i> Form Presensi Siswa</div>
+          <div class="card-body">
+            <form id="formPresensi" onsubmit="handlePresensiSubmit(event)">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="presensiTanggal" class="form-label">Tanggal Presensi</label>
+                  <input type="date" class="form-control" id="presensiTanggal" required>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0" id="colNamaSiswa">
+                  <label for="presensiNamaSiswa" class="form-label">Nama Siswa</label>
+                  <select class="form-select" id="presensiNamaSiswa" required>
+                    <option value="">-- Pilih Siswa --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="presensiKelas" class="form-label">Kelas</label>
+                  <div id="containerKelasInput">
+                    <input class="form-control" id="presensiKelas" readonly required placeholder="Otomatis terisi dari data siswa">
+                  </div>
+                  <div id="containerKelasSelect" style="display:none;">
+                    <select class="form-select" id="presensiKelasSelect">
+                      <option value="">-- Pilih Kelas --</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                  <label for="presensiJenis" class="form-label">Jenis Kehadiran / Ketidakhadiran</label>
+                  <select class="form-select" id="presensiJenis" required onchange="handlePresensiJenisChange()">
+                    <option value="">-- Pilih Status --</option>
+                    <option value="Hadir Semua">Hadir Semua</option>
+                    <option value="Sakit">Sakit</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Alpa">Alpa</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="presensiGuru" class="form-label">Guru Piket Pencatat</label>
+                <select class="form-select" id="presensiGuru" required>
+                  <option value="">-- Pilih Guru Piket --</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" id="btnSimpanPresensi"><i class="fas fa-save"></i> Simpan Presensi</button>
+            </form>
+            <div id="presensiAlert" class="alert mt-3" style="display:none" role="alert"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: REKAP KEHADIRAN                        -->
+      <!-- ========================================== -->
+      <div id="rekapPresensi" class="page-section">
+        <h2 class="mb-4">Rekap Kehadiran per Kelas</h2>
+        <div class="card">
+          <div class="card-header">Filter Rekap</div>
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label for="filterKelasPresensi" class="form-label">Kelas</label>
+                <select id="filterKelasPresensi" class="form-select">
+                  <option value="SEMUA">Semua Kelas</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="filterMulaiPresensi" class="form-label">Dari Tanggal</label>
+                <input type="date" id="filterMulaiPresensi" class="form-control">
+              </div>
+              <div class="col-md-3">
+                <label for="filterSampaiPresensi" class="form-label">Sampai Tanggal</label>
+                <input type="date" id="filterSampaiPresensi" class="form-control">
+              </div>
+              <div class="col-md-2 d-grid">
+                <button class="btn btn-primary" onclick="muatRekapPresensi()"><i class="fas fa-search"></i> Tampilkan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-3"><div class="card bg-success-subtle"><div class="card-body"><div class="text-muted">Hadir Semua</div><h3 id="rekapTotalHadir">0</h3></div></div></div>
+          <div class="col-md-3"><div class="card bg-warning-subtle"><div class="card-body"><div class="text-muted">Sakit</div><h3 id="rekapTotalSakit">0</h3></div></div></div>
+          <div class="col-md-3"><div class="card bg-info-subtle"><div class="card-body"><div class="text-muted">Izin</div><h3 id="rekapTotalIzin">0</h3></div></div></div>
+          <div class="col-md-3"><div class="card bg-danger-subtle"><div class="card-body"><div class="text-muted">Alpa</div><h3 id="rekapTotalAlpa">0</h3></div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>Detail Presensi</span>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
+              <button class="btn btn-success btn-sm" onclick="eksporRekapPresensiCSV()"><i class="fas fa-file-csv"></i> Ekspor CSV</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover mb-0">
+                <thead class="table-light"><tr><th>Tanggal</th><th>Nama Siswa</th><th>Kelas</th><th>Status</th><th>Guru Pencatat</th></tr></thead>
+                <tbody id="table-rekap-presensi"><tr><td colspan="5" class="text-center py-4 text-muted">Pilih filter lalu klik Tampilkan.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: JADWAL PIKET                           -->
+      <!-- ========================================== -->
+      <div id="piket" class="page-section">
+        <h2 class="mb-4">Jadwal Guru Piket</h2>
+        <div class="card">
+          <div class="card-header">Jadwal Mingguan</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-bordered mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Hari</th>
+                    <th>Nama Guru Piket</th>
+                    <th>Tugas Utama</th>
+                  </tr>
+                </thead>
+                <tbody id="table-piket-body">
+                  <tr><td colspan="3" class="text-center py-4">Memuat data jadwal piket...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <small class="text-muted">* Untuk mengedit jadwal, silakan ubah langsung melalui Google Sheets.</small>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- PAGE: TATA TERTIB                            -->
+      <!-- ========================================== -->
+      <div id="aturan" class="page-section">
+        <h2 class="mb-4">Tata Tertib & Poin</h2>
+        <div class="card">
+          <div class="card-header">Daftar Aturan Sekolah</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Jenis Pelanggaran / Aturan</th>
+                    <th>Bobot Poin</th>
+                  </tr>
+                </thead>
+                <tbody id="table-aturan-body">
+                  <tr><td colspan="3" class="text-center py-4">Memuat tata tertib...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Application Logic -->
+  <script>
+    // Variabel Global untuk menyimpan state data
+    let globalSiswaData = [];
+    let globalAturanData = [];
+    let globalGuruData = [];
+    let dataRekapPresensi = [];
+    let exportUrl = "#";
+
+    // 1. Inisialisasi saat halaman dimuat
+    document.addEventListener("DOMContentLoaded", () => {
+      // Jika dijalankan di dalam Google Apps Script environment
+      if (typeof google !== 'undefined') {
+        loadAllData();
+      } else {
+        // Fallback mockup jika di-preview di luar GAS
+        document.getElementById('loadingOverlay').style.display = 'none';
+        alert("Aplikasi ini harus dijalankan melalui Google Apps Script Web App URL.");
+      }
+    });
+
+    // 2. Fungsi Navigasi SPA
+    function navigate(pageId, element) {
+      // Hapus active class dari semua menu
+      const menus = document.querySelectorAll('#sidebar ul li');
+      menus.forEach(menu => menu.classList.remove('active'));
+      
+      // Tambah active class ke menu yang diklik
+      if(element) {
+        element.parentElement.classList.add('active');
+      }
+
+      // Sembunyikan semua halaman
+      const pages = document.querySelectorAll('.page-section');
+      pages.forEach(page => page.classList.remove('active'));
+      
+      // Tampilkan halaman yang dipilih
+      document.getElementById(pageId).classList.add('active');
+
+      // Tutup sidebar di versi mobile
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
+      }
+
+      // Refresh data jika membuka halaman laporan
+      if (pageId === 'laporan') {
+         fetchLaporan();
+      }
+      if (pageId === 'rekapPresensi') {
+         muatRekapPresensi();
+      }
+    }
+
+    // 3. Toggle Sidebar (Mobile)
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('mobileOverlay').classList.toggle('active');
+    }
+
+    // 4. Memuat Semua Data dari Apps Script
+    function loadAllData() {
+      // Ambil Dashboard
+      google.script.run.withSuccessHandler(populateDashboard).getDashboardData();
+      
+      // Ambil Data Dropdown (Siswa, Aturan, Guru)
+      google.script.run
+        .withSuccessHandler(populateDropdowns)
+        .withFailureHandler(function(error) {
+          console.error('Server getDropdownData gagal:', error);
+          const guruSelect = document.getElementById('guruPencatat');
+          const aturanSelect = document.getElementById('jenisPelanggaran');
+          if (guruSelect) guruSelect.innerHTML = '<option value="">Kesalahan memuat data guru</option>';
+          if (aturanSelect) aturanSelect.innerHTML = '<option value="">Kesalahan memuat data pelanggaran</option>';
+          const loadingOverlay = document.getElementById('loadingOverlay');
+          if (loadingOverlay) loadingOverlay.style.display = 'none';
+          alert('Gagal mengambil data pilihan dari server: ' + (error && error.message ? error.message : error));
+        })
+        .getDropdownData();
+      
+      // Ambil Jadwal Piket
+      google.script.run.withSuccessHandler(populatePiket).getJadwalPiket();
+      
+      // Ambil URL Export
+      google.script.run.withSuccessHandler((url) => { exportUrl = url; }).getExportUrl();
+    }
+
+    // 5. Callback Handlers
+    function populateDashboard(data) {
+      document.getElementById('dash-total-pelanggaran').innerText = data.totalPelanggaranHariIni || 0;
+      document.getElementById('dash-guru-piket').innerText = data.guruPiket || "-";
+      document.getElementById('dash-hari').innerText = data.hari || "";
+    }
+
+    function populateDropdowns(data) {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) loadingOverlay.style.display = 'none';
+
+      const siswaList = document.getElementById('siswaList');
+      const aturanSelect = document.getElementById('jenisPelanggaran');
+      const guruSelect = document.getElementById('guruPencatat');
+      const tableAturanBody = document.getElementById('table-aturan-body');
+
+      // Siapkan placeholder agar pengguna mengetahui status data.
+      if (aturanSelect) aturanSelect.innerHTML = '<option value="">Memuat jenis pelanggaran...</option>';
+      if (guruSelect) guruSelect.innerHTML = '<option value="">Memuat nama guru...</option>';
+
+      if (!data || data.error) {
+        console.error('Gagal memuat data dropdown:', data && data.error ? data.error : 'Respons server kosong.');
+        if (aturanSelect) aturanSelect.innerHTML = '<option value="">Gagal memuat pelanggaran</option>';
+        if (guruSelect) guruSelect.innerHTML = '<option value="">Gagal memuat nama guru</option>';
+        alert('Data pilihan tidak berhasil dimuat. Periksa nama sheet Data_Guru dan Tata_Tertib serta izin akses Apps Script.');
+        return;
+      }
+
+      // Populate Siswa
+      globalSiswaData = Array.isArray(data.siswa) ? data.siswa : [];
+      if (siswaList) {
+        siswaList.innerHTML = '';
+        globalSiswaData.forEach(row => {
+          if (!row || !row[1]) return;
+          const option = document.createElement('option');
+          option.value = String(row[1]).trim();
+          siswaList.appendChild(option);
+        });
+      }
+
+      // Hindari penambahan event listener berulang setiap kali data dimuat ulang.
+      const namaSiswaInput = document.getElementById('namaSiswa');
+      if (namaSiswaInput && namaSiswaInput.dataset.listenerAdded !== 'true') {
+        namaSiswaInput.addEventListener('input', function() {
+          const val = this.value.trim();
+          const siswa = globalSiswaData.find(s => String(s[1] || '').trim() === val);
+          document.getElementById('kelasSiswa').value = siswa ? siswa[2] : '';
+        });
+        namaSiswaInput.dataset.listenerAdded = 'true';
+      }
+
+      // Populate jenis pelanggaran. option.textContent wajib diisi agar label terlihat.
+      globalAturanData = Array.isArray(data.aturan) ? data.aturan : [];
+      if (aturanSelect) {
+        aturanSelect.innerHTML = '<option value="">-- Pilih Jenis Pelanggaran --</option>';
+        globalAturanData.forEach(row => {
+          if (!row || !String(row[1] || '').trim()) return;
+          const namaAturan = String(row[1]).trim();
+          const poin = row[2] == null ? '' : String(row[2]).trim();
+          const option = document.createElement('option');
+          option.value = namaAturan;
+          option.textContent = poin ? `${namaAturan} (${poin} poin)` : namaAturan;
+          aturanSelect.appendChild(option);
+        });
+      }
+
+      // Populate tabel tata tertib
+      if (tableAturanBody) {
+        tableAturanBody.innerHTML = '';
+        globalAturanData.forEach(row => {
+          if (!row) return;
+          const tr = document.createElement('tr');
+          [row[0], row[1], `${row[2] == null ? '' : row[2]} Poin`].forEach(value => {
+            const td = document.createElement('td');
+            td.textContent = value == null ? '' : String(value);
+            tr.appendChild(td);
+          });
+          tableAturanBody.appendChild(tr);
+        });
+      }
+
+      // Populate nama guru pencatat. option.textContent wajib diisi agar nama terlihat.
+      const dataGuru = Array.isArray(data.guru) ? data.guru : [];
+      globalGuruData = dataGuru;
+      if (guruSelect) {
+        guruSelect.innerHTML = '<option value="">-- Pilih Guru Piket Pencatat --</option>';
+        let jumlahGuru = 0;
+        dataGuru.forEach(row => {
+          if (!row || !String(row[1] || '').trim()) return;
+          const namaGuru = String(row[1]).trim();
+          const option = document.createElement('option');
+          option.value = namaGuru;
+          option.textContent = namaGuru;
+          guruSelect.appendChild(option);
+          jumlahGuru++;
+        });
+        if (jumlahGuru === 0) {
+          guruSelect.innerHTML = '<option value="">Belum ada nama guru di sheet Data_Guru</option>';
+          console.warn('Tidak ada nama guru. Pastikan nama guru berada di kolom B mulai baris 2 pada sheet Data_Guru.');
+        }
+      }
+
+      // Pilihan siswa/guru untuk formulir presensi dan pilihan kelas rekap.
+      const presensiSiswa = document.getElementById('presensiNamaSiswa');
+      if (presensiSiswa) {
+        presensiSiswa.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+        globalSiswaData.forEach(row => {
+          if (!row || !String(row[1] || '').trim()) return;
+          const opt = document.createElement('option');
+          opt.value = String(row[1]).trim();
+          opt.textContent = String(row[1]).trim();
+          presensiSiswa.appendChild(opt);
+        });
+        presensiSiswa.onchange = function() {
+          const siswa = globalSiswaData.find(r => r && String(r[1] || '').trim() === this.value);
+          document.getElementById('presensiKelas').value = siswa ? String(siswa[2] || '').trim() : '';
+        };
+      }
+      const presensiGuru = document.getElementById('presensiGuru');
+      if (presensiGuru) {
+        presensiGuru.innerHTML = '<option value="">-- Pilih Guru Piket --</option>';
+        dataGuru.forEach(row => {
+          if (!row || !String(row[1] || '').trim()) return;
+          const opt = document.createElement('option');
+          opt.value = String(row[1]).trim();
+          opt.textContent = String(row[1]).trim();
+          presensiGuru.appendChild(opt);
+        });
+      }
+      
+      const kelasSelect = document.getElementById('filterKelasPresensi');
+      const presensiKelasSelect = document.getElementById('presensiKelasSelect');
+      const daftarKelas = ['1-A','1-B','2-A','2-B','2-C','3-A','3-B','3-C','4-A','4-B','5-A','5-B','6-A','6-B'];
+
+      if (kelasSelect && kelasSelect.options.length <= 1) {
+        daftarKelas.forEach(k => {
+          const opt = document.createElement('option'); opt.value = k; opt.textContent = k; kelasSelect.appendChild(opt);
+        });
+      }
+      
+      if (presensiKelasSelect && presensiKelasSelect.options.length <= 1) {
+        daftarKelas.forEach(k => {
+          const opt = document.createElement('option'); opt.value = k; opt.textContent = k; presensiKelasSelect.appendChild(opt);
+        });
+      }
+
+      console.log('Dropdown dimuat:', {
+        jumlahSiswa: globalSiswaData.length,
+        jumlahPelanggaran: globalAturanData.length,
+        jumlahGuru: dataGuru.filter(row => row && String(row[1] || '').trim()).length
+      });
+    }
+
+    function populatePiket(data) {
+      const tbody = document.getElementById('table-piket-body');
+      tbody.innerHTML = '';
+      if(data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center">Belum ada data jadwal.</td></tr>';
+        return;
+      }
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${row[0]}</strong></td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 6. Update Poin di Form secara otomatis
+    function updatePoin() {
+      const selectedAturan = document.getElementById('jenisPelanggaran').value;
+      const aturan = globalAturanData.find(a => a[1] === selectedAturan);
+      if (aturan) {
+        document.getElementById('poin').value = aturan[2];
+      }
+    }
+
+    // 7. Submit Form
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      const btn = document.getElementById('btnSubmitForm');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
+
+      const formData = {
+        namaSiswa: document.getElementById('namaSiswa').value,
+        kelasSiswa: document.getElementById('kelasSiswa').value,
+        jenisPelanggaran: document.getElementById('jenisPelanggaran').value,
+        poin: document.getElementById('poin').value,
+        guruPencatat: document.getElementById('guruPencatat').value,
+        keterangan: document.getElementById('keterangan').value
+      };
+
+      google.script.run.withSuccessHandler(onFormSuccess).simpanPelanggaran(formData);
+    }
+
+    function onFormSuccess(response) {
+      const btn = document.getElementById('btnSubmitForm');
+      const alertDiv = document.getElementById('formAlert');
+      
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Simpan Data';
+      
+      alertDiv.style.display = 'block';
+      
+      if (response.success) {
+        alertDiv.className = 'mt-3 alert alert-success';
+        alertDiv.innerText = response.message;
+        document.getElementById('formPelanggaran').reset();
+        
+        // Refresh dashboard statistics
+        google.script.run.withSuccessHandler(populateDashboard).getDashboardData();
+      } else {
+        alertDiv.className = 'mt-3 alert alert-danger';
+        alertDiv.innerText = "Error: " + response.message;
+      }
+
+      setTimeout(() => { alertDiv.style.display = 'none'; }, 4000);
+    }
+
+    // 8. Ambil Data Laporan (Dipanggil saat menu Laporan diklik)
+    function fetchLaporan() {
+      const tbody = document.getElementById('table-laporan-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="spinner-border text-primary" role="status"></div><br>Memuat...</td></tr>';
+      google.script.run.withSuccessHandler(populateLaporan).getLaporanPelanggaran();
+    }
+
+    function populateLaporan(data) {
+      const tbody = document.getElementById('table-laporan-body');
+      tbody.innerHTML = '';
+      
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Belum ada riwayat pelanggaran.</td></tr>';
+        return;
+      }
+
+      data.forEach(row => {
+        // Struktur data: Timestamp, Tanggal, Nama, Kelas, Pelanggaran, Poin, Keterangan, Pencatat
+        // Timestamp kolom A dipakai sebagai identitas untuk menghapus catatan yang tepat.
+        const tr = document.createElement('tr');
+        const values = [row[1], row[2], row[3], row[4], row[5], row[7]];
+        values.forEach((value, index) => {
+          const td = document.createElement('td');
+          if (index === 1) {
+            const strong = document.createElement('strong');
+            strong.textContent = value == null ? '' : String(value);
+            td.appendChild(strong);
+          } else if (index === 3) {
+            td.textContent = value == null ? '' : String(value);
+            const small = document.createElement('small');
+            small.className = 'text-muted d-block';
+            small.textContent = row[6] == null ? '' : String(row[6]);
+            td.appendChild(document.createElement('br'));
+            td.appendChild(small);
+          } else {
+            td.textContent = value == null ? '' : String(value);
+          }
+          if (index === 4) td.className = 'text-danger fw-bold';
+          tr.appendChild(td);
+        });
+
+        const actionTd = document.createElement('td');
+        actionTd.className = 'text-center';
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn btn-outline-danger btn-sm';
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus';
+        deleteBtn.title = 'Hapus catatan ini';
+        deleteBtn.addEventListener('click', () => hapusLaporan(row[0], row[2]));
+        actionTd.appendChild(deleteBtn);
+        tr.appendChild(actionTd);
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Hapus satu catatan laporan berdasarkan timestamp unik dari kolom A.
+    function hapusLaporan(timestamp, namaSiswa) {
+      if (timestamp === undefined || timestamp === null || timestamp === '') {
+        alert('Catatan tidak memiliki ID/timestamp. Data tidak dihapus demi keamanan.');
+        return;
+      }
+      const konfirmasi = confirm('Hapus laporan pelanggaran milik ' + (namaSiswa || 'siswa ini') +
+        '?\\nTindakan ini tidak dapat dibatalkan.');
+      if (!konfirmasi) return;
+
+      const tombol = document.activeElement;
+      if (tombol && tombol.tagName === 'BUTTON') {
+        tombol.disabled = true;
+        tombol.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Menghapus...';
+      }
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response && response.success) {
+            fetchLaporan();
+            google.script.run.withSuccessHandler(populateDashboard).getDashboardData();
+          } else {
+            alert('Data gagal dihapus: ' + (response && response.message ? response.message : 'Respons server tidak valid.'));
+            fetchLaporan();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Gagal menghapus data: ' + (error && error.message ? error.message : error));
+          fetchLaporan();
+        })
+        .hapusPelanggaran(timestamp);
+    }
+
+    // Logika UI untuk Toggle Hadir Semua
+    function handlePresensiJenisChange() {
+      const jenis = document.getElementById('presensiJenis').value;
+      const colNamaSiswa = document.getElementById('colNamaSiswa');
+      const inputNamaSiswa = document.getElementById('presensiNamaSiswa');
+      
+      const containerKelasInput = document.getElementById('containerKelasInput');
+      const containerKelasSelect = document.getElementById('containerKelasSelect');
+      const inputKelas = document.getElementById('presensiKelas');
+      const selectKelas = document.getElementById('presensiKelasSelect');
+
+      if (jenis === 'Hadir Semua') {
+        colNamaSiswa.style.display = 'none';
+        inputNamaSiswa.removeAttribute('required');
+        
+        containerKelasInput.style.display = 'none';
+        inputKelas.removeAttribute('required');
+        
+        containerKelasSelect.style.display = 'block';
+        selectKelas.setAttribute('required', 'required');
+      } else {
+        colNamaSiswa.style.display = 'block';
+        inputNamaSiswa.setAttribute('required', 'required');
+        
+        containerKelasInput.style.display = 'block';
+        inputKelas.setAttribute('required', 'required');
+        
+        containerKelasSelect.style.display = 'none';
+        selectKelas.removeAttribute('required');
+      }
+    }
+
+    // Presensi kehadiran
+    document.addEventListener('DOMContentLoaded', function() {
+      const tgl = document.getElementById('presensiTanggal');
+      if (tgl) {
+        const now = new Date();
+        tgl.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      }
+    });
+
+    function handlePresensiSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSimpanPresensi');
+      const alertBox = document.getElementById('presensiAlert');
+
+      const jenis = document.getElementById('presensiJenis').value;
+      let namaSiswa = document.getElementById('presensiNamaSiswa').value;
+      let kelasSiswa = document.getElementById('presensiKelas').value;
+      
+      if (jenis === 'Hadir Semua') {
+        namaSiswa = 'Semua Siswa';
+        kelasSiswa = document.getElementById('presensiKelasSelect').value;
+      }
+
+      const data = {
+        tanggal: document.getElementById('presensiTanggal').value,
+        namaSiswa: namaSiswa,
+        kelasSiswa: kelasSiswa,
+        jenisKetidakhadiran: jenis,
+        guruPencatat: document.getElementById('presensiGuru').value
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> Simpan Presensi';
+          alertBox.style.display = 'block';
+          if (res && res.success) {
+            alertBox.className = 'alert alert-success mt-3';
+            alertBox.textContent = res.message || 'Presensi berhasil disimpan.';
+            
+            document.getElementById('formPresensi').reset();
+            handlePresensiJenisChange(); // Kembalikan UI ke awal
+            
+            const now = new Date();
+            document.getElementById('presensiTanggal').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            document.getElementById('presensiKelas').value = '';
+          } else {
+            alertBox.className = 'alert alert-danger mt-3';
+            alertBox.textContent = res && res.message ? res.message : 'Presensi gagal disimpan.';
+          }
+          setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> Simpan Presensi';
+          alertBox.style.display = 'block';
+          alertBox.className = 'alert alert-danger mt-3';
+          alertBox.textContent = 'Kesalahan server: ' + (err && err.message ? err.message : err);
+        })
+        .simpanPresensiKehadiran(data);
+    }
+
+    function muatRekapPresensi() {
+      const tbody = document.getElementById('table-rekap-presensi');
+      if (!tbody) return;
+      const mulai = document.getElementById('filterMulaiPresensi').value;
+      const sampai = document.getElementById('filterSampaiPresensi').value;
+      if (mulai && sampai && mulai > sampai) {
+        alert('Tanggal awal tidak boleh melewati tanggal akhir.');
+        return;
+      }
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Memuat rekap...</td></tr>';
+      const filters = { kelas: document.getElementById('filterKelasPresensi').value, mulai: mulai, sampai: sampai };
+      google.script.run
+        .withSuccessHandler(function(rows) {
+          dataRekapPresensi = Array.isArray(rows) ? rows : [];
+          renderRekapPresensi();
+        })
+        .withFailureHandler(function(err) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Gagal memuat rekap: ' +
+            escapeHtml(err && err.message ? err.message : err) + '</td></tr>';
+        })
+        .getRekapPresensiKehadiran(filters);
+    }
+
+    function renderRekapPresensi() {
+      const tbody = document.getElementById('table-rekap-presensi');
+      tbody.innerHTML = '';
+      const counts = { 'Hadir Semua': 0, Sakit: 0, Izin: 0, Alpa: 0 };
+      
+      dataRekapPresensi.forEach(row => { 
+        if (Object.prototype.hasOwnProperty.call(counts, row[4])) counts[row[4]]++; 
+      });
+      
+      document.getElementById('rekapTotalHadir').textContent = counts['Hadir Semua'];
+      document.getElementById('rekapTotalSakit').textContent = counts.Sakit;
+      document.getElementById('rekapTotalIzin').textContent = counts.Izin;
+      document.getElementById('rekapTotalAlpa').textContent = counts.Alpa;
+      
+      if (!dataRekapPresensi.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Tidak ada data presensi untuk filter ini.</td></tr>';
+        return;
+      }
+      
+      dataRekapPresensi.forEach(row => {
+        const tr = document.createElement('tr');
+        row.slice(1, 6).forEach((value, i) => {
+          const td = document.createElement('td');
+          td.textContent = value == null ? '' : String(value);
+          if (i === 3) { // Kolom Status
+            td.innerHTML = '';
+            const badge = document.createElement('span');
+            let badgeClass = 'text-bg-secondary';
+            if (value === 'Sakit') badgeClass = 'text-bg-warning';
+            else if (value === 'Izin') badgeClass = 'text-bg-info';
+            else if (value === 'Alpa') badgeClass = 'text-bg-danger';
+            else if (value === 'Hadir Semua') badgeClass = 'text-bg-success';
+            
+            badge.className = 'badge ' + badgeClass;
+            badge.textContent = value == null ? '' : String(value);
+            td.appendChild(badge);
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function eksporRekapPresensiCSV() {
+      if (!dataRekapPresensi.length) {
+        alert('Tidak ada data rekap untuk diekspor. Tampilkan rekap terlebih dahulu.');
+        return;
+      }
+      const rows = [['Tanggal','Nama Siswa','Kelas','Status','Guru Piket Pencatat']]
+        .concat(dataRekapPresensi.map(r => r.slice(1, 6)));
+      const csv = '\\uFEFF' + rows.map(row => row.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\\r\\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Rekap_Presensi_SIPATUH_RCB3.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+      });
+    }
+
+    // 9. Download Excel
+    function downloadExcel() {
+      if(exportUrl !== "#") {
+        window.open(exportUrl, '_blank');
+      } else {
+        alert("Gagal mengambil tautan unduhan. Silakan muat ulang halaman.");
+      }
+    }
+  </script>
+</body>
+</html>
+```eof
+
+**Perubahan yang dilakukan:**
+1. **Form Input:** Menambahkan opsi `Hadir Semua` di menu *dropdown* **Jenis Kehadiran / Ketidakhadiran**.
+2. **Logika Form Dinamis:** Menambahkan fungsi Javascript `handlePresensiJenisChange()` agar ketika `Hadir Semua` dipilih, kolom input Nama Siswa otomatis disembunyikan (*hidden*) dan kolom Kelas menjadi *dropdown select* untuk memilih kelas.
+3. **Penyimpanan:** Jika `Hadir Semua` dipilih, nama siswa yang direkam ke Google Sheets akan menjadi otomatis *"Semua Siswa"*. 
+4. **Rekap Hadir Semua:** Menambahkan satu kotak/kartu baru berwarna hijau di menu **Rekap Kehadiran** agar Anda bisa memantau total jumlah kelas yang diisi dengan status "Hadir Semua". Lencana (*badge*) yang muncul di tabel juga akan otomatis diset warna hijau (`text-bg-success`).
